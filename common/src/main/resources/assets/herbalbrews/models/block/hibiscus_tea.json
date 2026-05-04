@@ -3,7 +3,6 @@
 	"textures": {
 		"1": "herbalbrews:block/hibiscus_tea",
 		"particle": "herbalbrews:block/hibiscus_tea"
-
 	},
 	"elements": [
 		{
@@ -58,11 +57,11 @@
 			"from": [10.25, 0.1, 8.25],
 			"to": [13.75, 4.1, 11.75],
 			"faces": {
-				"north": {"uv": [6, 12, 10, 16], "texture": "#1"},
-				"east": {"uv": [6, 12, 10, 16], "texture": "#1"},
-				"south": {"uv": [6, 12, 10, 16], "texture": "#1"},
-				"west": {"uv": [6, 12, 10, 16], "texture": "#1"},
-				"up": {"uv": [6, 11, 10, 15], "texture": "#1"},
+				"north": {"uv": [6, 11, 10, 15], "texture": "#1"},
+				"east": {"uv": [6, 11, 10, 15], "texture": "#1"},
+				"south": {"uv": [6, 11, 10, 15], "texture": "#1"},
+				"west": {"uv": [6, 11, 10, 15], "texture": "#1"},
+				"up": {"uv": [12, 12, 16, 16], "texture": "#1"},
 				"down": {"uv": [6, 11, 10, 15], "texture": "#1"}
 			}
 		},
@@ -87,7 +86,7 @@
 				"east": {"uv": [6, 16, 10, 12], "texture": "#1"},
 				"south": {"uv": [6, 16, 10, 12], "texture": "#1"},
 				"west": {"uv": [6, 16, 10, 12], "texture": "#1"},
-				"up": {"uv": [6, 11, 10, 15], "texture": "#1"},
+				"up": {"uv": [12, 12, 16, 16], "texture": "#1"},
 				"down": {"uv": [6, 11, 10, 15], "texture": "#1"}
 			}
 		},
@@ -109,10 +108,10 @@
 			"to": [7, 6, -2],
 			"rotation": {"angle": -45, "axis": "y", "origin": [0, 0, 0]},
 			"faces": {
-				"north": {"uv": [9, 9, 11, 11], "texture": "#1"},
+				"north": {"uv": [11, 9, 9, 11], "texture": "#1"},
 				"east": {"uv": [10, 9, 11, 11], "texture": "#1"},
 				"south": {"uv": [9, 9, 11, 11], "texture": "#1"},
-				"west": {"uv": [10, 9, 11, 11], "texture": "#1"},
+				"west": {"uv": [9, 9, 10, 11], "texture": "#1"},
 				"up": {"uv": [9, 9, 11, 10], "texture": "#1"},
 				"down": {"uv": [9, 9, 11, 10], "texture": "#1"}
 			}
@@ -123,21 +122,18 @@
 			"name": "group",
 			"origin": [0, 0, 0],
 			"color": 0,
-			"nbt": "{}",
 			"children": [0, 1, 2, 3]
 		},
 		{
 			"name": "group",
 			"origin": [8, 8, 8],
 			"color": 0,
-			"nbt": "{}",
 			"children": [4, 5]
 		},
 		{
 			"name": "group",
 			"origin": [8, 8, 8],
 			"color": 0,
-			"nbt": "{}",
 			"children": [6, 7, 8]
 		}
 	]

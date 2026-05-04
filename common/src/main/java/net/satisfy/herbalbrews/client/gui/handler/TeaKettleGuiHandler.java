@@ -1,59 +1,64 @@
 package net.satisfy.herbalbrews.client.gui.handler;
 
-import de.cristelknight.doapi.client.recipebook.IRecipeBookGroup;
-import de.cristelknight.doapi.client.recipebook.handler.AbstractRecipeBookGUIScreenHandler;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.FurnaceResultSlot;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.satisfy.herbalbrews.blocks.entity.TeaKettleBlockEntity;
-import net.satisfy.herbalbrews.client.recipebook.group.TeaKettleRecipeBookGroup;
-import net.satisfy.herbalbrews.recipe.TeaKettleRecipe;
-import net.satisfy.herbalbrews.registry.ScreenHandlerTypeRegistry;
+import net.minecraft.world.item.ItemStack;
+import net.satisfy.herbalbrews.core.registry.MenuTypeRegistry;
+import net.satisfy.herbalbrews.core.registry.TagsRegistry;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+public class TeaKettleGuiHandler extends AbstractContainerMenu {
+    private final Container container;
+    private final ContainerData propertyDelegate;
 
-public class TeaKettleGuiHandler extends AbstractRecipeBookGUIScreenHandler {
     public TeaKettleGuiHandler(int syncId, Inventory playerInventory) {
-        this(syncId, playerInventory, new SimpleContainer(7), new SimpleContainerData(2));
+        this(syncId, playerInventory, new SimpleContainer(8), new SimpleContainerData(5));
     }
 
-    public TeaKettleGuiHandler(int syncId, Inventory playerInventory, Container inventory, ContainerData propertyDelegate) {
-        super(ScreenHandlerTypeRegistry.TEA_KETTLE_SCREEN_HANDLER.get(), syncId, 6, playerInventory, inventory, propertyDelegate);
-        buildBlockEntityContainer(playerInventory, inventory);
-        buildPlayerContainer(playerInventory);
-    }
+    public TeaKettleGuiHandler(int syncId, Inventory playerInventory, Container container, ContainerData propertyDelegate) {
+        super(MenuTypeRegistry.TEA_KETTLE_SCREEN_HANDLER.get(), syncId);
+        this.container = container;
+        this.propertyDelegate = propertyDelegate;
+        addDataSlots(this.propertyDelegate);
+        addSlot(new FurnaceResultSlot(playerInventory.player, container, 0, 91, 22));
+        addSlot(new Slot(container, 1, 13, 12));
+        addSlot(new Slot(container, 2, 31, 12));
+        addSlot(new Slot(container, 3, 13, 30));
+        addSlot(new Slot(container, 4, 31, 30));
+        addSlot(new Slot(container, 5, 31, 52) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(TagsRegistry.CONTAINER_ITEMS);
+            }
+        });
+        addSlot(new Slot(container, 6, 118, 43) {
 
-    private void buildBlockEntityContainer(Inventory playerInventory, Container inventory) {
-        this.addSlot(new FurnaceResultSlot(playerInventory.player, inventory, 0, 124, 26));
-        for (int row = 0; row < 2; row++) {
-            for (int slot = 0; slot < 3; slot++) {
-                this.addSlot(new Slot(inventory, 1 + slot + row + (row * 2), 30 + (slot * 18), 17 + (row * 18)));
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(TagsRegistry.SMALL_WATER_FILL) || stack.is(TagsRegistry.LARGE_WATER_FILL);
+            }
+        });
+        addSlot(new Slot(container, 7, 95, 58) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(TagsRegistry.HEAT_ITEMS);
+            }
+        });
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 9; j++) {
+                addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-    }
-
-    private void buildPlayerContainer(Inventory playerInventory) {
-        int i;
-        for (i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-            }
+        for (int i = 0; i < 9; i++) {
+            addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
-        for (i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
-        }
-    }
-
-    @Override
-    public boolean stillValid(Player player) {
-        return true;
     }
 
     public boolean isBeingBurned() {
@@ -61,41 +66,75 @@ public class TeaKettleGuiHandler extends AbstractRecipeBookGUIScreenHandler {
     }
 
     public int getScaledProgress(int arrowWidth) {
-        final int progress = this.propertyDelegate.get(0);
-        final int totalProgress = TeaKettleBlockEntity.MAX_COOKING_TIME;
-        if (progress == 0) {
+        int progress = propertyDelegate.get(0);
+        int total = propertyDelegate.get(4);
+        if (total <= 0) {
             return 0;
         }
-        return progress * arrowWidth/ totalProgress + 1;
+        return progress * arrowWidth / total;
+    }
+
+    public int getWaterLevel() {
+        return propertyDelegate.get(2);
+    }
+
+    public int getHeatLevel() {
+        return propertyDelegate.get(3);
+    }
+
+    public int getCookingTime() {
+        return propertyDelegate.get(0);
+    }
+
+    public int getRequiredDuration() {
+        return propertyDelegate.get(4);
     }
 
     @Override
-    public List<IRecipeBookGroup> getGroups() {
-        return TeaKettleRecipeBookGroup.TEAKETTLE_GROUPS;
-    }
+    public @NotNull ItemStack quickMoveStack(Player player, int index) {
+        Slot slot = this.slots.get(index);
+        if (!slot.hasItem()) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack item = slot.getItem();
+        ItemStack copy = item.copy();
 
-    @Override
-    public boolean hasIngredient(Recipe<?> recipe) {
-        if (recipe instanceof TeaKettleRecipe potRecipe) {
-            for (Ingredient ingredient : potRecipe.getIngredients()) {
-                boolean found = false;
-                for (Slot slot : this.slots) {
-                    if (ingredient.test(slot.getItem())) {
-                        found = true;
-                        break;
+        if (index < 8) {
+            if (!this.moveItemStackTo(item, 8, this.slots.size(), true)) {
+                return ItemStack.EMPTY;
+            }
+            slot.onQuickCraft(item, copy);
+        } else {
+            if (index < this.slots.size()) {
+                if (item.is(TagsRegistry.CONTAINER_ITEMS)) {
+                    if (!this.moveItemStackTo(item, 5, 6, false)) {
+                        return ItemStack.EMPTY;
                     }
-                }
-                if (!found) {
-                    return false;
+                } else if (item.is(TagsRegistry.HEAT_ITEMS)) {
+                    if (!this.moveItemStackTo(item, 7, 8, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (item.is(TagsRegistry.SMALL_WATER_FILL) || item.is(TagsRegistry.LARGE_WATER_FILL)) {
+                    if (!this.moveItemStackTo(item, 6, 7, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (!this.moveItemStackTo(item, 0, 5, false)) {
+                    return ItemStack.EMPTY;
                 }
             }
-            return true;
         }
-        return false;
+
+        if (item.isEmpty()) {
+            slot.set(ItemStack.EMPTY);
+        } else {
+            slot.setChanged();
+        }
+        slot.onTake(player, item);
+        return copy;
     }
 
     @Override
-    public int getCraftingSlotCount() {
-        return 6;
+    public boolean stillValid(Player player) {
+        return container.stillValid(player);
     }
 }

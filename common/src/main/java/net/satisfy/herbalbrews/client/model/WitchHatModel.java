@@ -8,10 +8,10 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.world.entity.Entity;
-import net.satisfy.herbalbrews.util.HerbalBrewsIdentifier;
+import net.satisfy.herbalbrews.core.util.HerbalBrewsIdentifier;
 
 public class WitchHatModel<T extends Entity> extends EntityModel<T> implements HatModel {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new HerbalBrewsIdentifier("witch_hat_helmet"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(HerbalBrewsIdentifier.identifier("witch_hat"), "main");
     private final ModelPart witchHat;
 
     public WitchHatModel(ModelPart root) {
@@ -33,18 +33,11 @@ public class WitchHatModel<T extends Entity> extends EntityModel<T> implements H
         return LayerDefinition.create(meshdefinition, 48, 48);
     }
 
-
-
-
-
-
-
-
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, int k) {
         poseStack.pushPose();
         poseStack.scale(1.05F, 1.05F, 1.05F);
-        witchHat.render(poseStack, buffer, packedLight, packedOverlay);
+        witchHat.render(poseStack, vertexConsumer, i, j, k);
         poseStack.popPose();
     }
 

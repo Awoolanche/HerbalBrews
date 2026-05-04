@@ -1,20 +1,18 @@
 package net.satisfy.herbalbrews;
 
-import net.satisfy.herbalbrews.event.CommonEvents;
-import net.satisfy.herbalbrews.registry.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.satisfy.herbalbrews.core.event.CommonEvents;
+import net.satisfy.herbalbrews.core.registry.*;
 
 public class HerbalBrews {
     public static final String MOD_ID = "herbalbrews";
-    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static void init() {
         ObjectRegistry.init();
+        EntityTypeRegistry.init();
         EffectRegistry.init();
-        BlockEntityRegistry.init();
         RecipeTypeRegistry.init();
-        ScreenHandlerTypeRegistry.init();
+        SoundEventRegistry.init();
+        MenuTypeRegistry.init();
         TabRegistry.init();
         CommonEvents.init();
     }
